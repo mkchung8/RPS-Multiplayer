@@ -34,15 +34,31 @@
                 <h2>Player 1</h2>
               </div>
               <div class="col-sm">
-                <h2>Score</h2>
-                <h3>Round Number: </h3>
-                <h3>Player 1: </h3>
-                <h3>Player 2: </h3>
+                  
+                <form class="player-form">
+                    Player 1: <input id="player1-name" type="text" name="lname" value="Type Your Name Here">
+                    <input id="player-entry" type="submit" value="Submit">
+                </form>
+                <form class="player-form">
+                     Player 2: <input id="player2-name" type="text" name="lname" value="Type Your Name Here">
+                    <input id="player-entry" type="submit" value="Submit">
+                </form>
 
               </div>
               <div id="player2-div" class="col-sm">
                 <h2>Player 2</h2>
+                    
               </div>
+            </div>
+            <div class="row">
+               <div class="col-sm">
+                   <h2>Trash Talk Chat Box</h2>
+                Chat message place holder. 
+                <form id="chat-form">
+                  Message: <input id="chat-input" type="text" name="message" value="">
+                  <input id="player-entry" type="submit" value="Submit">
+                </form>
+                </div>
             </div>
           </div>
 
@@ -54,7 +70,7 @@
 <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
 
 <!--Link to external javascript-->
-  <script type="text/javascript" src="./assets/javascript/game.js"></script>
+  <script type="text/javascript" src="./assets/javascript/app.js"></script>
 
 
 </body>

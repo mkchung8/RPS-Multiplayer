@@ -16,9 +16,9 @@ $(document).ready(function(){
 
 
   var database = firebase.database();
-
-  var player1Choice = "";
-  var player2Choice = ""; 
+  var playerTurn = database.ref();
+  var player1 = database.ref("/player1")
+  var player2 = database.ref("/player2"); 
   var player1Score = 0; 
   var player2Score = 0; 
   var roundNumber = 1;
@@ -82,20 +82,66 @@ $(document).ready(function(){
 
      $("#player1-div").append(p1selectRock).append(p1selectPaper).append(p1selectScissors);
      
+     $("#player1-div").on("click","button", function(){
+         player1Choice = $(this).attr("data-id");
+         console.log(`player 1 picked ${player1Choice}`)
+         database.ref().set({
+             p1Choice: player1Choice
+            
+             });
+        
+         p1Lock = true; 
+         if ((p1Lock === true) && (p2Lock === false)) {
+             $("#player1-div button").attr("disabled", true);
+             $(".lead").text("Waiting for Player 2.")
+             }
+        else if ((p1Lock === false) && (p2Lock === false)) {
+            $(".lead").text("Select your Move")
+        }
+        else if ((p1Lock === true) && (p2Lock === true)){
+            $("#player1-div").text(`Player 1 has picked ${player1Choice}`)
+            $("#player2-div").text(`Player 2 has picked ${player2Choice}`)
+            $(".lead").text("the winner is!...")
+        }
+
+         });
      
      var p2selectRock = $('<button type="button" data-id="rock" class="btn btn-dark btn-lg">Rock</button>');
      var p2selectPaper = $('<button type="button" data-id="paper" class="btn btn-dark btn-lg">Paper</button>');
      var p2selectScissors = $('<button type="button" data-id="scissors" class="btn btn-dark btn-lg">Scissors</button>');
-     
+
     $("#player2-div").append(p2selectRock).append(p2selectPaper).append(p2selectScissors);
+
+    $("#player2-div").on("click", "button", function(){
+        player2Choice = $(this).attr("data-id")
+        console.log(`player 2 picked ${player2Choice}`)
+        database.ref().set({
+        p2Choice: player2Choice
+            });
+        p2Lock = true; 
+        if ((p1Lock === false) && (p2Lock === true)) {
+            $("#player2-div button").attr("disabled", true);
+            $(".lead").text("Waiting for Player 1.")
+            }
+       else if ((p1Lock === false) && (p2Lock === false)) {
+           $(".lead").text("Select your Move")
+       }
+       else if ((p1Lock === true) && (p2Lock === true)){
+           $("#player1-div").text(`Player 1 has picked ${player1Choice}`)
+           $("#player2-div").text(`Player 2 has picked ${player2Choice}`)
+           $(".lead").text("the winner is!...")
+       }
+    });
+
+    database.ref().on("value", function(snapshot){
+        console.log(snapshot.val())
+    }, function(errorObject){
+        console.log("The read failed: " + errorObject.code)
+    });
+
+   /*if ((player1Choice === "rock") || (player1Choice === "paper") || (player1Choice === "scissors")) {
+       if ((player1Choice === "rock" && player2Choice === "scissors") || (player1Choice === "scissors" && player2Choice ))
+   } */
+
 };
-  
-  $("#p1rock").on("click",function(){
-      player1Choice = "Rock";
-      console.log("click")
-      database.ref().set({
-        p1Choice: player1Choice,
-      })
-  })
-  
 });
