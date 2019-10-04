@@ -3,6 +3,7 @@ body {
     font-family: 'Roboto Mono', monospace, Arial, Helvetica, sans-serif;
 }
 
+
 h1 {
     font-size: 40px;
     text-align: center;
@@ -10,9 +11,14 @@ h1 {
 
 }
 
+p1 {
+    font-weight: bold;
+    font-size: 20px;
+}
+
 #logo {
-    height: 50%;
-    width: 70%;
+    height: 40%;
+    width: 100%;
     margin-bottom: 20px;
     margin-top: 10px;
 }
@@ -25,12 +31,23 @@ h2 {
     padding: 10px;
 }
 
+h3 {
+    font-size: 25px; 
+    font-weight: bold;
+    padding: 10px; 
+    color: red;
+}
 .col-sm {
   border-style: solid;
   border-width: 5px;
   margin: 10px;
-  min-height: 400px;  
+  min-height: 500px;  
   align-content: center;
+}
+
+.moves {
+    border-style: solid; 
+    border-color: black;
 }
 
 
@@ -51,3 +68,29 @@ h2 {
     width: 100%;
     font-size: 15px;
 }
+
+input {
+    padding: 10px;
+    margin: 5px;
+}
+
+.pick {
+    margin: 10px;
+}
+
+#p1-moves {
+    position: absolute; 
+    bottom: 0px;
+    right: 1px;
+    width: 100%;
+
+}
+
+#p2-moves {
+    position: absolute; 
+    bottom: 0px;
+    right: 1px;
+    width: 100%;
+
+}
+
