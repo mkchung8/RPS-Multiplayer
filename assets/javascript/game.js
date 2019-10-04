@@ -143,5 +143,45 @@ $(document).ready(function(){
        if ((player1Choice === "rock" && player2Choice === "scissors") || (player1Choice === "scissors" && player2Choice ))
    } */
 
+
+
+
+
+
+   // Publishes Player 1 Data to Firebase 
+  player1.on("value", function(snapshot) {
+    console.log(snapshot.val());
+    if (snapshot.val() === null) {
+        let waitMessage = $("<p>")
+        waitMessage.text("Waiting for Player 1...")
+        waitMessage.css("margin-top", "100px")
+        $("#player1-div").append(waitMessage)
+    } else {
+        player1 = snapshot.val().name
+    }
+  }, function(errorObject) {
+    console.log("The read has failed: " + errorObject.code);
+  });
+    
+// Publishes Player 2 Data to Firebase 
+  player2.on("value", function(snapshot) {
+    
+    if (snapshot.val() === null) {
+        let waitMessage = $("<p>")
+        waitMessage.text("Waiting for Player 2...")
+        waitMessage.css("margin-top", "100px")
+        $("#player2-div").append(waitMessage)
+    }
+  }, function(errorObject) {
+    console.log("The read has failed: " + errorObject.code);
+  });   
+
+  function gamePlay() {
+    console.log("game is starting now")
+    var buttonRock = $('<button type="button" data-id="rock" class="btn btn-dark btn-lg">Rock</button>');
+    var p1selectPaper = $('<button type="button" data-id="paper" class="btn btn-dark btn-lg">Paper</button>');
+    var p1selectScissors = $('<button type="button" data-id="scissors" class="btn btn-dark btn-lg">Scissors</button>');
+
+  };
 };
 });
