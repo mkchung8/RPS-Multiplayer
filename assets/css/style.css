@@ -11,10 +11,6 @@ h1 {
 
 }
 
-p1 {
-    font-weight: bold;
-    font-size: 20px;
-}
 
 #logo {
     height: 40%;
@@ -23,6 +19,9 @@ p1 {
     margin-top: 10px;
 }
 
+#scores {
+    margin-top: 50px; 
+}
 
 
 h2 {
@@ -35,7 +34,6 @@ h3 {
     font-size: 25px; 
     font-weight: bold;
     padding: 10px; 
-    color: red;
 }
 .col-sm {
   border-style: solid;
@@ -62,13 +60,29 @@ h3 {
 }
 
 .player-form {
-    margin-top: 10px;
+    margin-top: 100px;
     margin-bottom: 10px;
     font-weight: bold;
     width: 100%;
     font-size: 15px;
 }
 
+ul {
+    width: 100%; 
+    text-align: center;
+    margin-top: 100px;  
+}
+
+li {
+    color: black;
+    border-style: double;
+    border-width: 5px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 30px;
+    padding: 10px;  
+}
 input {
     padding: 10px;
     margin: 5px;
@@ -78,19 +92,4 @@ input {
     margin: 10px;
 }
 
-#p1-moves {
-    position: absolute; 
-    bottom: 0px;
-    right: 1px;
-    width: 100%;
-
-}
-
-#p2-moves {
-    position: absolute; 
-    bottom: 0px;
-    right: 1px;
-    width: 100%;
-
-}
 

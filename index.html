@@ -1,75 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>RPS Multiplayer</title>
-    <!--Link to jQuery Library-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-   <!--Bootstrap Link-->
-   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-   
-   <!--Link to external style sheet-->
-   <link rel="stylesheet" type="text/css" href="./assets/css/reset.css">
-   <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
-   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>RPS Multiplayer</title>
+
+  <!--Link to jQuery Library-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <!--Bootstrap Link-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!--Link to external style sheet-->
+  <link rel="stylesheet" type="text/css" href="./assets/css/reset.css">
+  <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+
+  <!-- Firebase References -->
+  <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
+
+  <!--Link to external javascript-->
+  <script type="text/javascript" src="./assets/javascript/app.js"></script>
+
 
 
 </head>
 
 <body>
-        <div class="jumbotron jumbotron-fluid">
-                <div class="container">
-                  <h1 class="display-4">RPS Multiplayer Battle</h1>
-                  <p class="lead">Welcome to the Battle Dome. Enter your name to begin.</p>
-                </div>
-              </div>
+  <div class="jumbotron jumbotron-fluid">
     <div class="container">
-            <div class="row">
-              <div id="player1-div" class="col-sm">
-                <h3>Waiting for P1...</h3>
-              </div>
-              <div id="game-sort" class="col-sm">
-                <img id="logo" src="./assets/images/logo.jpg">  
-                <form id="player1-form" class="player-form">
-                   <p1>Player 1 Name:</p1><br><input id="player1-name" type="text">
-                    <input id="player1-entry" type="submit" value="Submit">
-                </form>
-                <form id="player2-form" class="player-form">
-                    <p1>Player 2 Name:</p1><br> <input id="player2-name" type="text">
-                    <input id="player2-entry" type="submit" value="Submit">
-                </form>
-
-              </div>
-              <div id="player2-div" class="col-sm">
-                <h3>Waiting for P2...</h3>
-                    
-              </div>
-            </div>
-            <div class="row">
-               <div class="col-sm">
-                   <h2>Trash Talk Chat Box</h2>
-                Chat message place holder. 
-                <form id="chat-form">
-                  Message: <input id="chat-input" type="text" name="message" value="">
-                  <input id="message-entry" type="submit" value="Submit">
-                </form>
-                </div>
-            </div>
+      <h1 class="display-4">RPS Multiplayer Battle</h1>
+      <p class="lead">Welcome to the Battle Dome. Enter your name to begin.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div id="player1-div" class="col-sm">
+        <h2 id="p1-title"></h2>
+        <form id="player1-form" class="player-form">
+          <p1>Player 1 Name:</p1><br><input id="player1-name" type="text">
+          <input id="player1-entry" type="submit" value="Submit">
+        </form>
+      </div>
+      <div id="game-sort" class="col-sm">
+        <img id="logo" src="./assets/images/logo.jpg">
+        <div id="scores">
+          <div id="p1-score">
+            <h3></h3>
           </div>
+          <div id="p2-score">
+            <h3></h3>
+          </div>
+          <div id="tie-score">
+            <h3></h3>
+          </div>
+        </div>
+
+
+      </div>
+      <div id="player2-div" class="col-sm">
+        <h2 id="p2-title"></h2>
+        <form id="player2-form" class="player-form">
+          <p1>Player 2 Name:</p1><br> <input id="player2-name" type="text">
+          <input id="player2-entry" type="submit" value="Submit">
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        <h2>Trash Talk Chat Box</h2>
+        Chat message place holder.
+        <form id="chat-form">
+          Message: <input id="chat-input" type="text" name="message" value="">
+          <input id="message-entry" type="submit" value="Submit">
+        </form>
+      </div>
+    </div>
+  </div>
 
 
 
-          
-<!-- Firebase References -->
-<script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
-
-<!--Link to external javascript-->
-  <script type="text/javascript" src="./assets/javascript/app.js"></script>
 
 
 </body>
+
 </html>
