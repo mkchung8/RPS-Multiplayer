@@ -92,4 +92,9 @@ input {
     margin: 10px;
 }
 
-
+#p2-start-button { 
+    padding: 20px; 
+    padding-bottom: 40px;
+    text-decoration: blink
+    ;
+}

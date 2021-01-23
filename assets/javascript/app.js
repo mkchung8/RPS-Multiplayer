@@ -13,137 +13,80 @@ $(document).ready(function () {
     // Initialize Firebase
     firebase.initializeApp(config);
 
-    //Declaring Global Variables 
     var database = firebase.database();
-    var chatData = database.ref("/chat");
-    var playersRef = database.ref("/players");
-    var turnCheck = database.ref("turn");
-    var username = "Guest";
-    var currentPlayers = null;
-    var currentTurn = null;
-    var playerNum = false;
-    var p1Selected = false;
-    var p2Selected = false;
-    var p1Data = null;
-    var p2Data = null;
+    var playersRef = database.ref("players");
 
-    $("#player1-entry").on("click", function () {
-        event.preventDefault();
-        if ($("#player1-name").val() !== "") {
-            username = capitalize($("#player1-name").val());
-            playersRef.child("player1").set({
-                name: username,
-                wins: 0,
-                losses: 0,
-                choice: null,
-                turnLock: true
-            });
-        };
-
-    });
-
-    $("#player2-entry").on("click", function () {
-        event.preventDefault();
-        if ($("#player2-name").val() !== "") {
-            username = capitalize($("#player2-name").val());
-            playersRef.child("player2").set({
-                name: username,
-                wins: 0,
-                losses: 0,
-                choice: null,
-                turnLock: true
-            })
-        };
-    });
-
-
+    // Declaring Game Variables
     playersRef.on("value", function (snapshot) {
-        p1Selected = snapshot.child("player1").exists();
-        p2Selected = snapshot.child("player2").exists();
+        let playerOneExists = snapshot.child("1").val();
+        let playerTwoExists = snapshot.child("2").val();
 
-        p1Data = snapshot.child("player1").val();
-        p2Data = snapshot.child("player2").val();
+        console.log(`p1: ${playerOneExists}`);
+        console.log(`p2: ${playerTwoExists}`);
+        if (!playerOneExists && !playerTwoExists) {
+            console.log("no players");
+            var p1StartButton = `<button type="button" id="p2-start-button">
+                                  <h3>Player 2</h3> 
+                                  <br>
+                                  <h4 class="blink">Press to Start</h4>
+                                 </button>`;
+            var p2StartButton = `<button type="button" id="p2-start-button">
+                                    <h3>Player 2</h3> 
+                                    <br>
+                                    <h4 class="blink">Press to Start</h4>
+                                 </button>`
+            $("#player1-div").append(p1StartButton);
+            $("#player2-div").append(p2StartButton);
 
-        $(".lead").text("Welcome to the Battledome. Enter your name to Begin.")
 
-        if (p1Selected) {
-            let p1Name = capitalize(p1Data.name);
-            $(".lead").text("Waiting for Player 2...");
-            $("#player1-div").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${p1Name}</b></h3>`);
-        } 
+        } else if (playerOneExists && !playerTwoExists) {
+            console.log("waiting for player 2")
+        } else if (!playerOneExists && playerTwoExists) {
+            console.log("waiting for player 1")
+        } else if (playerOneExists && playerTwoExists) {
+            console.log("start play")
+        }
 
-        if (p2Selected) {
-            let p2Name = capitalize(p2Data.name);
-            $(".lead").text("Waiting for Player 1...");
-            $("#player2-div").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p-0"><b>${p2Name}</b></h3>`);
-        } 
 
-        if (p1Selected && p2Selected) {
-            $(".player-form").remove();
-            $(".lead").text("Both Players Ready! PREPARE FOR BATTLE!");
-            playersRef.child("player1").child("turnLock").set(false); 
-            gamePlay();
-        };
 
     });
+    function blinkIt() {
+        var blinks = document.getElementsByClassName("blink");
+        for (var i = 0, l = blinks.length; i < l; i++) {
+            var blink = blinks[i];
+            var visiblity = blink.style.visibility;
+            blink.style.visibility = visiblity == 'visible' ? 'hidden' : 'visible';
+        }
+    }
 
-    function capitalize(name) {
-        return name.charAt(0).toUpperCase() + name.slice(1);
+    setInterval(blinkIt, 500 /* blinking interval in ms */);
+
+
+
+    function p1Select() {
+        console.log('p1 select exec');
+        var p1Input = `<form id="player1-form" class="player-form">
+                        <p1>Player 1 Name:</p1><br><input id="player1-name" type="text">
+                        <input id="player1-entry" type="submit" value="Submit">
+                       </form>`;
+        $("#player1-div").html(p1Input);
+    };
+
+    function p2Select() {
+        console.log('p2 select exec');
+        var p2Input = `<form id="player2-form" class="player-form">
+                        <p1>Player 2 Name:</p1><br> <input id="player2-name" type="text">
+                        <input id="player2-entry" type="submit" value="Submit">
+                       </form>`;
+        $("#player2-div").html(p2Input);
     };
 
     function gamePlay() {
-        
-        $(".lead").empty(); 
+        console.log("gameplay exec"); 
+    };
 
-        if (p1Data.turnLock === false && p2Data.turnLock === true) {
-            console.log(`p1 turn`)
-           p1Turn(); 
-        }
+    function resetGame() {
+        console.log("reset game exec"); 
+    };
 
-        if (p1Data.turnLock === true && p2Data.turnLock === false) {
-            console.log(`p2 turn`)
-            p2Turn(); 
-        }
-
-        if (p1Data.turnLock === true && p2Data.turnLock === true) {
-            logicSort(p1Data.choice, p2Data.choice);
-            console.log(`logic sort`); 
-        }
-
-
-    }
-
-    function p1Turn() {
-        $("#player1-div").append('<ul id="p1-choices"><li>Rocko</li><li>Paper</li><li>Scissors</li></ul>');
-        $("#player1-div").css("border", "3px solid green");
-        $("#player2-div").css("border", "3px solid red");
-        $("#player2-div").html(`<h3>Waiting for Player 1 to finish their turn...</h3>`);
-
-        $("ul").on("click", "li", function(){
-            console.log($(this).text())
-            let choice = $(this).text(); 
-            playersRef.child("player1").child("choice").set(choice);
-            playersRef.child("player1").child("turnLock").set(true); 
-        }); 
-    }
-    
-    function p2Turn () {
-        $("#player2-div").append('<ul id="p2-choices"><li>Rock</li><li>Paper</li><li>Scissors</li></ul>');
-        $("#player2-div").css("border", "3px solid green");
-        $("#player1-div").css("border", "3px solid red");
-        $("#player1-div").html(`<h3>Waiting for Player 2 to finish their turn...</h3>`);
-    }
-
-    function logicSort() {
-        $("#player1-div").css("border", "3px solid blue");
-        $("#player2-div").css("border", "3px solid blue");
-
-        // reveal both players choice
-        // compare answers 
-        // tally scores 
-        // 
-    }
-
-
-
-})
+});
