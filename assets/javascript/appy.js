@@ -75,6 +75,68 @@ $(document).ready(function () {
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
+  // Tracks changes in key which contains player objects.
+  playersRef.on("value",
+    // successful callback function
+    function (snapshot) {
+      // Checking to see if players exist. 
+      let playerOneExists = snapshot.child("player1").val();
+      let playerTwoExists = snapshot.child("player2").val();
+      console.log(`p1: ${playerOneExists}`);
+      console.log(`p2: ${playerTwoExists}`);
+      if (!playerOneExists && !playerTwoExists) {
+        console.log("no players");
+        p1Name="Guest"; 
+        p2Name="Guest"; 
+        // var p1StartButton = `<button type="button" id="p1-start-button" class="startButton" >
+        //                       <h3>Player 1</h3> 
+        //                       <br>
+        //                       <h4 class="blink">Press to Start</h4>
+        //                    </button>`;
+        // var p2StartButton = `<button type="button" id="p2-start-button" class="startButton">
+        //                       <h3>Player 2</h3> 
+        //                       <br>
+        //                       <h4 class="blink">Press to Start</h4>
+        //                    </button>`;
+        // // $("#player1-div").append(p1StartButton);
+        // $("#player2-div").append(p2StartButton);
+
+        // setTimeout(function () {
+        //   $("#sub-title").html("<p3>Players Press Start!</p3>");
+        //   $("#p1-score").html(`<p2 style="color:red;">Waiting for P1...</p2>`);
+        //   $("#p2-score").html(`<p2 style="color:red;">Waiting for P2...</p2>`);
+        // }, 2000);
+
+        // $("#p1-start-button").one("click", function () {
+        //   console.log("p1 button has been presssed");
+        //   p1Select();
+        // });
+        p1Select();
+        p2Select();
+        // $("#p2-start-button").one("click", function () {
+        //   console.log("p2 button has been pressed");
+        //   p2Select();
+        // });
+      } else if (playerOneExists && !playerTwoExists) {
+        console.log("waiting for player 2");
+        // $("#p1-title").html(`<p2>Player 1 Ready</p2>`);
+        // $("#player1-form").remove();
+        p2Select(); 
+
+      } else if (!playerOneExists && playerTwoExists) {
+        console.log("waiting for player 1");
+      } else if (playerOneExists && playerTwoExists) {
+        console.log("two players already exist");
+
+        
+      };
+    },
+    // error callback
+    function (error) {
+      console.error(error);
+    });
+
+
   function gamePlay() {
 
     $(".lead").empty();
