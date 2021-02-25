@@ -16,6 +16,7 @@ $(document).ready(function () {
   // Declaring Variables 
   var database = firebase.database();
   var playersRef = database.ref("players");
+  var currentTurnRef = database.ref("turn"); 
 
   var p1StartButton = `<button type="button" id="p1-start-button" class="startButton" >
                          <h3>Player 1</h3> 
@@ -51,6 +52,7 @@ $(document).ready(function () {
       } else if (playerOneExists) {
         console.log(`player 1 exists`);
         $("#p1-start-button").remove();
+        $("#p1-score").html(`<p2 style="color:green;"> P1 READY </p2>`);
       };
 
       if (!playerTwoExists) {
@@ -64,6 +66,7 @@ $(document).ready(function () {
       if (playerTwoExists && playerTwoExists) {
         console.log('both players exist');
         $("#sub-title").text("Ready for Battle!!!"); 
+        currentTurnRef.set(1); 
         gamePlay();
       };
     },
@@ -117,7 +120,7 @@ $(document).ready(function () {
       choice: null,
       turnLock: true
     });
-    $("#p1-title").text(p1Name); 
+    $("#player1-div").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${p1Name}</b></h3>`);
   };
 
   function p2Select() {
@@ -151,12 +154,20 @@ $(document).ready(function () {
       choice: null,
       turnLock: true
     });
-    $("#p2-title").text(p2Name); 
+    $("#player2-div").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p-0"><b>${p2Name}</b></h3>`);
   };
+
+  currentTurnRef.on("value", function(snapshot){
+    currentTurn = snapshot.val(); 
+    console.log("current turn: " + currentTurn); 
+  });
 
   function gamePlay() {
     console.log("gameplay exec 1");
-
+    $("#score-title").html('<h2>SCORE</h2>'); 
+    $("#p1-score").html('<p2>P1: 0</p2>');
+    $("#p2-score").html('<p2>P2: 0</p2>'); 
+    $("#tie-score").html('<p2>Ties: 0</p2>');
   };
 
   function resetGame() {
