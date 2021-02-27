@@ -16,18 +16,17 @@ $(document).ready(function () {
   // Declaring Variables 
   var database = firebase.database();
   var playersRef = database.ref("players");
-  var currentTurnRef = database.ref("turn"); 
+  var currentTurnRef = database.ref("turn");
+  var currentPlayers = null;
+  var playerNum = false;
+  var playerOneData = null;
+  var playerTwoData = null;
 
   var p1StartButton = `<button type="button" id="p1-start-button" class="startButton" >
                          <h3>Player 1</h3> 
                          <br>
                          <h4 class="blink">Press to Start</h4>
                        </button>`;
-  $("#player1-div").append(p1StartButton);
-  $("#p1-start-button").one("click", function () {
-    event.preventDefault();
-    p1Select();
-  });
 
   var p2StartButton = `<button type="button" id="p2-start-button" class="startButton">
                           <h3>Player 2</h3> 
@@ -35,40 +34,60 @@ $(document).ready(function () {
                           <h4 class="blink">Press to Start</h4>
                          </button>`;
   $("#player2-div").append(p2StartButton);
-  $("#p2-start-button").one("click", function () {
-    event.preventDefault();
-    p2Select();
-  });
+
+
 
   // Tracks changes in key which contains player objects.
   playersRef.on("value",
     // successful callback function
     function (snapshot) {
+      currentPlayers = snapshot.numChildren();
       // Checking to see if players exist. 
       let playerOneExists = snapshot.child("player1").val();
       let playerTwoExists = snapshot.child("player2").val();
-      if (!playerOneExists) {
-        console.log('p1 does not exist');
-      } else if (playerOneExists) {
-        console.log(`player 1 exists`);
-        $("#p1-start-button").remove();
-        $("#p1-score").html(`<p2 style="color:green;"> P1 READY </p2>`);
-      };
 
-      if (!playerTwoExists) {
-        console.log('player 2 does not exist');
+      // Player Data Objects
+      playerOneData = snapshot.child("1").val();
+      playerTwoData = snapshot.child("2").val();
+
+
+
+      if (playerOneExists) {
+        $("#p1-title").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${playerOneData.name}</b></h3>`);
+        $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`);
       } else {
-        console.log('player two does exist');
-        $("#p2-start-button").remove();
-        $("#p2-score").html(`<p2 style="color:green;"> P2 READY </p2>`);
-      };
+        $("#p1-title").html(`<p style="color:red">Waiting for P1...</p>`);
+        $("#player1-div").append(p1StartButton);
+        $("#p1-score").empty();
+        $("#tie-score").empty();
+      }
+      $(".startButton").on("click", function () {
+        event.preventDefault();
+        $(this).remove();
+        loadPlayerForm();
+      });
+      // if (!playerOneExists) {
+      //   console.log('p1 does not exist');
+      // } else if (playerOneExists) {
+      //   console.log(`player 1 exists`);
+      //   $("#p1-start-button").remove();
+      //   $("#p1-score").html(`<p2 style="color:green;"> P1 READY </p2>`);
+      // };
 
-      if (playerTwoExists && playerTwoExists) {
-        console.log('both players exist');
-        $("#sub-title").text("Ready for Battle!!!"); 
-        currentTurnRef.set(1); 
-        gamePlay();
-      };
+      // if (!playerTwoExists) {
+      //   console.log('player 2 does not exist');
+      // } else {
+      //   console.log('player two does exist');
+      //   $("#p2-start-button").remove();
+      //   $("#p2-score").html(`<p2 style="color:green;"> P2 READY </p2>`);
+      // };
+
+      // if (playerTwoExists && playerTwoExists) {
+      //   console.log('both players exist' + currentPlayers);
+      //   $("#sub-title").text("Ready for Battle!!!"); 
+      //   currentTurnRef.set(1); 
+      //   gamePlay();
+      // };
     },
     // error callback
     function (error) {
@@ -89,12 +108,32 @@ $(document).ready(function () {
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
+  function loadPlayerForm() {
+    var playerInputForm = `<form class="player-form">
+                    <p1>Enter Name: </p1><br><input id="username" type="text">
+                    <input id="name-enter" type="submit" value="Submit">
+                   </form>`;
+    $("#player1-div").append(playerInputForm);
+    $("#name-enter").on("click", function () {
+      event.preventDefault();
+      if ($("#username").val() !== "") {
+        username = capitalize($("#username").val());
+        console.log("enter name button was pressed");
+        playerSet(username);
+      }
+    });
+  };
+
+  function playerSet(username) {
+    console.log(username);
+  }; 
+
   function p1Select() {
     $("#p1-start-button").remove();
     $("#p1-title").text("Player 1");
-    var p1Input = `<form id="player1-form" class="player-form">
-                    <p1>Enter Name: </p1><br><input id="player1-name" type="text">
-                    <input id="player1-entry" type="submit" value="Submit">
+    var p1Input = `<form class="player-form">
+                    <p1>Enter Name: </p1><br><input id="username" type="text">
+                    <input id="name-enter" type="submit" value="Submit">
                    </form>`;
     $("#player1-div").append(p1Input);
     $("#player1-entry").on("click", function () {
@@ -157,16 +196,16 @@ $(document).ready(function () {
     $("#player2-div").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p-0"><b>${p2Name}</b></h3>`);
   };
 
-  currentTurnRef.on("value", function(snapshot){
-    currentTurn = snapshot.val(); 
-    console.log("current turn: " + currentTurn); 
+  currentTurnRef.on("value", function (snapshot) {
+    currentTurn = snapshot.val();
+    console.log("current turn: " + currentTurn);
   });
 
   function gamePlay() {
     console.log("gameplay exec 1");
-    $("#score-title").html('<h2>SCORE</h2>'); 
+    $("#score-title").html('<h2>SCORE</h2>');
     $("#p1-score").html('<p2>P1: 0</p2>');
-    $("#p2-score").html('<p2>P2: 0</p2>'); 
+    $("#p2-score").html('<p2>P2: 0</p2>');
     $("#tie-score").html('<p2>Ties: 0</p2>');
   };
 
