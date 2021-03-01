@@ -55,7 +55,7 @@ $(document).ready(function () {
         $("#p1-title").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${playerOneData.name}</b></h3>`);
         $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`);
       } else {
-      // If there is no Player 1, clear score and show waiting. 
+        // If there is no Player 1, clear score and show waiting. 
         $("#p1-title").html(`<h2 style="color:red">Waiting for P1...</h2>`);
         $("#player1-div").append(p1StartButton);
         $("#p1-score").empty();
@@ -65,9 +65,9 @@ $(document).ready(function () {
       // If there is a Player 2, fill in name and score data. 
       if (playerTwoExists) {
         $("#p2-title").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p=0"><b>${playerTwoData.name}</b></h3>`);
-        $("#p2-score").html(`<p2>P2: ${playerTwoData.wins}</p2>`); 
+        $("#p2-score").html(`<p2>P2: ${playerTwoData.wins}</p2>`);
       } else {
-      // If there is no Player 2, clear score and show waiting. 
+        // If there is no Player 2, clear score and show waiting. 
         $("#p2-title").html(`<h2 style="color:red">Waiting for P2...</h2>`);
         $("#player2-div").append(p2StartButton);
         $("#p2-score").empty();
@@ -80,7 +80,7 @@ $(document).ready(function () {
         $(this).remove();
         loadPlayerForm();
       });
-      
+
       // if (!playerOneExists) {
       //   console.log('p1 does not exist');
       // } else if (playerOneExists) {
@@ -109,6 +109,7 @@ $(document).ready(function () {
       console.error(error);
     });
 
+  // Function to make text blink. 
   function blinkIt() {
     var blinks = document.getElementsByClassName("blink");
     for (var i = 0, l = blinks.length; i < l; i++) {
@@ -119,10 +120,12 @@ $(document).ready(function () {
   };
   setInterval(blinkIt, 500 /* blinking interval in ms */);
 
+  // Function to capitalize user name. 
   function capitalize(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
+  // Function that loads player form to user's div. 
   function loadPlayerForm() {
     var playerInputForm = `<form class="player-form">
                     <p1>Enter Name: </p1><br><input id="username" type="text">
@@ -138,33 +141,60 @@ $(document).ready(function () {
       }
     });
   };
-
+  
+  // Function to get user into the game. 
   function playerSet(username) {
-    console.log(username);
-  }; 
 
-  function p1Select() {
-    $("#p1-start-button").remove();
-    $("#p1-title").text("Player 1");
-    var p1Input = `<form class="player-form">
-                    <p1>Enter Name: </p1><br><input id="username" type="text">
-                    <input id="name-enter" type="submit" value="Submit">
-                   </form>`;
-    $("#player1-div").append(p1Input);
-    $("#player1-entry").on("click", function () {
-      event.preventDefault();
-      if ($("#player1-name").val() !== "") {
-        p1Name = capitalize($("#player1-name").val());
-        console.log(`p1 name is :${p1Name}`);
-        $("#player1-form").remove();
-        $("#p1-score").html(`<p2 style="color:red;">P1 Ready!</p2>`);
-        p1Set(p1Name);
+    // Checks for Current Players: If there is a P1 Connected, then player becomes P2. 
+    // If there is no P1, then user becomes P1. 
+    if (currentPlayers < 2) {
+      if (playerOneExists) {
+        playerNum = 2;
       } else {
-        console.log(`p1 name is: guest`);
-        p1Set(p1Name);
+        playerNum = 1;
       }
+    } else {
+      alert("Sorry! This Game is Full. Please Try Again Later!");
+    }
+
+    // Creates key based on player's number. 
+    playerRef = database.ref(`/players/${playerNum}`);
+
+    // Creates Player Object
+    playerRef.set({
+      name: username,
+      wins: 0,
+      losses: 0,
+      choice: null
     });
-  }
+    
+    //
+    playerRef.onDisconnect().remove();
+
+  };
+
+  // function p1Select() {
+  //   $("#p1-start-button").remove();
+  //   $("#p1-title").text("Player 1");
+  //   var p1Input = `<form class="player-form">
+  //                   <p1>Enter Name: </p1><br><input id="username" type="text">
+  //                   <input id="name-enter" type="submit" value="Submit">
+  //                  </form>`;
+  //   $("#player1-div").append(p1Input);
+  //   $("#player1-entry").on("click", function () {
+  //     event.preventDefault();
+  //     if ($("#player1-name").val() !== "") {
+  //       p1Name = capitalize($("#player1-name").val());
+  //       console.log(`p1 name is :${p1Name}`);
+  //       $("#player1-form").remove();
+  //       $("#p1-score").html(`<p2 style="color:red;">P1 Ready!</p2>`);
+  //       p1Set(p1Name);
+  //     } else {
+  //       console.log(`p1 name is: guest`);
+  //       p1Set(p1Name);
+  //     }
+  //   });
+  // }
   function p1Set(p1Name) {
     console.log("p1 set execute " + p1Name);
     playersRef.child("player1").set({
@@ -177,28 +207,28 @@ $(document).ready(function () {
     $("#player1-div").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${p1Name}</b></h3>`);
   };
 
-  function p2Select() {
-    console.log('p2 select exec');
-    $("#p2-start-button").remove();
-    $("#p2-title").text("Player 2");
-    var p2Input = `<form id="player2-form" class="player-form">
-                        <p1>Enter Name:</p1><br> <input id="player2-name" type="text">
-                        <input id="player2-entry" type="submit" value="Submit">
-                       </form>`;
-    $("#player2-div").append(p2Input);
-    $("#player2-entry").on("click", function () {
-      event.preventDefault();
-      if ($("#player2-name").val() !== "") {
-        p2Name = capitalize($("#player2-name").val());
-        console.log(`p2 name is ${p2Name}`);
-        $("#player2-form").remove();
-        p2Set(p2Name);
-      } else {
-        p2Name = "Guest";
-        p2Set(p2Name);
-      }
-    });
-  };
+  // function p2Select() {
+  //   console.log('p2 select exec');
+  //   $("#p2-start-button").remove();
+  //   $("#p2-title").text("Player 2");
+  //   var p2Input = `<form id="player2-form" class="player-form">
+  //                       <p1>Enter Name:</p1><br> <input id="player2-name" type="text">
+  //                       <input id="player2-entry" type="submit" value="Submit">
+  //                      </form>`;
+  //   $("#player2-div").append(p2Input);
+  //   $("#player2-entry").on("click", function () {
+  //     event.preventDefault();
+  //     if ($("#player2-name").val() !== "") {
+  //       p2Name = capitalize($("#player2-name").val());
+  //       console.log(`p2 name is ${p2Name}`);
+  //       $("#player2-form").remove();
+  //       p2Set(p2Name);
+  //     } else {
+  //       p2Name = "Guest";
+  //       p2Set(p2Name);
+  //     }
+  //   });
+  // };
   function p2Set(p2Name) {
     console.log("p2 set exec");
     playersRef.child("player2").set({
