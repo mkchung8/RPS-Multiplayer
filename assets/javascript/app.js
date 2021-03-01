@@ -22,6 +22,7 @@ $(document).ready(function () {
   var playerOneData = null;
   var playerTwoData = null;
 
+  // START BUTTONS  
   var p1StartButton = `<button type="button" id="p1-start-button" class="startButton" >
                          <h3>Player 1</h3> 
                          <br>
@@ -38,7 +39,9 @@ $(document).ready(function () {
   playersRef.on("value",
     // successful callback function
     function (snapshot) {
+      // Length of Players Array
       currentPlayers = snapshot.numChildren();
+
       // Checking to see if players exist. 
       let playerOneExists = snapshot.child("player1").val();
       let playerTwoExists = snapshot.child("player2").val();
@@ -47,30 +50,37 @@ $(document).ready(function () {
       playerOneData = snapshot.child("1").val();
       playerTwoData = snapshot.child("2").val();
 
+      // If there is a Player 1, fill in name and score data.
       if (playerOneExists) {
         $("#p1-title").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${playerOneData.name}</b></h3>`);
         $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`);
       } else {
+      // If there is no Player 1, clear score and show waiting. 
         $("#p1-title").html(`<h2 style="color:red">Waiting for P1...</h2>`);
         $("#player1-div").append(p1StartButton);
         $("#p1-score").empty();
         $("#tie-score").empty();
       }
 
+      // If there is a Player 2, fill in name and score data. 
       if (playerTwoExists) {
         $("#p2-title").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p=0"><b>${playerTwoData.name}</b></h3>`);
         $("#p2-score").html(`<p2>P2: ${playerTwoData.wins}</p2>`); 
       } else {
+      // If there is no Player 2, clear score and show waiting. 
         $("#p2-title").html(`<h2 style="color:red">Waiting for P2...</h2>`);
         $("#player2-div").append(p2StartButton);
         $("#p2-score").empty();
         $("#tie-score").empty();
       }
+
+      // Start Button Event Listener: Goes to Load Player Input Form. 
       $(".startButton").on("click", function () {
         event.preventDefault();
         $(this).remove();
         loadPlayerForm();
       });
+      
       // if (!playerOneExists) {
       //   console.log('p1 does not exist');
       // } else if (playerOneExists) {
