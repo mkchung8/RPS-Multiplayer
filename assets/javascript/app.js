@@ -33,9 +33,6 @@ $(document).ready(function () {
                           <br>
                           <h4 class="blink">Press to Start</h4>
                          </button>`;
-  $("#player2-div").append(p2StartButton);
-
-
 
   // Tracks changes in key which contains player objects.
   playersRef.on("value",
@@ -50,15 +47,23 @@ $(document).ready(function () {
       playerOneData = snapshot.child("1").val();
       playerTwoData = snapshot.child("2").val();
 
-
-
       if (playerOneExists) {
         $("#p1-title").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${playerOneData.name}</b></h3>`);
         $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`);
       } else {
-        $("#p1-title").html(`<p style="color:red">Waiting for P1...</p>`);
+        $("#p1-title").html(`<h2 style="color:red">Waiting for P1...</h2>`);
         $("#player1-div").append(p1StartButton);
         $("#p1-score").empty();
+        $("#tie-score").empty();
+      }
+
+      if (playerTwoExists) {
+        $("#p2-title").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p=0"><b>${playerTwoData.name}</b></h3>`);
+        $("#p2-score").html(`<p2>P2: ${playerTwoData.wins}</p2>`); 
+      } else {
+        $("#p2-title").html(`<h2 style="color:red">Waiting for P2...</h2>`);
+        $("#player2-div").append(p2StartButton);
+        $("#p2-score").empty();
         $("#tie-score").empty();
       }
       $(".startButton").on("click", function () {
