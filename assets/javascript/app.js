@@ -142,6 +142,13 @@ $(document).ready(function () {
     });
   };
   
+  // When a player joins, checks to see if there is two players. If yes, game will start. 
+  playerRef.on("child_added", function(snapshot){
+    if (currentPlayers === 1) {
+      // Sets Turn Ref Counter to 1, which will trigger the game to start. 
+      currentTurnRef.set(1); 
+    }
+  }); 
   // Function to get user into the game. 
   function playerSet(username) {
 
