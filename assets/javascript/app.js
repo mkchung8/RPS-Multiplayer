@@ -210,11 +210,13 @@ $(document).ready(function () {
       if (currentTurn === 1) {
         if (currentTurn === playerNum) {
           $("#sub-title").text("It's Your Turn!"); 
+          
           $(`#player${playerNum}-div`).append(`<ul id="${playerNum}-choices"><li>Rock</li><li>Paper</li><li>Scissors</li></ul>`);
         } else {
-          $("#sub-title").text("Waiting for" + playerOneData.name + "to choose");
+          $("#sub-title").text("Waiting for " + playerOneData.name + " to choose");
           
         }
+        $("#player1-div").css("border", "3px solid green");
       }
     }
   });
