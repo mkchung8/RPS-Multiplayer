@@ -180,7 +180,7 @@ $(document).ready(function () {
 
   // Function to get user into the game. 
   function playerSet(username, pNum) {
-    console.log("player set execc");
+
     // Checks for Current Players: If there is a P1 Connected, then player becomes P2. 
     // If there is no P1, then user becomes P1. 
     if (currentPlayers < 2) {
@@ -194,6 +194,8 @@ $(document).ready(function () {
       }
       // Creates key based on player's number. 
       playerRef = database.ref("/players/" + pNum);
+
+      // Creates Player's Object and pushes it to Firebase. 
       playerRef.set({
         name: username,
         wins: 0,
@@ -202,17 +204,14 @@ $(document).ready(function () {
       });
 
     } else {
+      // Sends and alert if another player tries to get in the game when theres already two players. 
       alert("Sorry! This Game is Full. Please Try Again Later!");
     }
 
-
-    // Creates Player Object
-
-
-    // // Turns Current Turn Ref to null on disconnect, which will discontinue the game. 
+    // Turns Current Turn Ref to null on disconnect, which will discontinue the game. 
     currentTurnRef.onDisconnect().remove();
 
-    // // Removes Player's Object on Disconnect. 
+    // Removes Player's Object on Disconnect. 
     playerRef.onDisconnect().remove();
   };
 
