@@ -48,6 +48,12 @@ $(document).ready(function () {
     $(this).remove();
   });
 
+  // Click events for dynamically added <li> elements
+  $(document).on("click", "li", function(){
+    
+    var clickChoice = $(this).text(); 
+    playerRef.child("choice").set(clickChoice); 
+  }); 
 
   // Tracks changes in key which contains player objects.
   playersRef.on("value",
@@ -217,6 +223,7 @@ $(document).ready(function () {
           
         }
         $("#player1-div").css("border", "3px solid green");
+        $("#player2-div").css("border", "3px solid red"); 
       }
     }
   });
