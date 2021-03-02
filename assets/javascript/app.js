@@ -58,8 +58,8 @@ $(document).ready(function () {
       console.log(`current players: ${currentPlayers}`)
 
       // Checking to see if players exist. 
-      let playerOneExists = snapshot.child("1").val();
-      let playerTwoExists = snapshot.child("2").val();
+      playerOneExists = snapshot.child("1").val();
+      playerTwoExists = snapshot.child("2").val();
 
       // Player Data Objects
       playerOneData = snapshot.child("1").val();
@@ -142,7 +142,6 @@ $(document).ready(function () {
                              <input class="name-enter" type="submit" value="Submit">
                            </form>`;
     $(`#player${pNum}-div`).append(playerInputForm);
-    console.log(`pnummy ${pNum}`)
     $(".name-enter").on("click", function () {
       event.preventDefault();
       if ($(`#p${pNum}-username`).val() !== "") {
@@ -168,16 +167,14 @@ $(document).ready(function () {
     // Checks for Current Players: If there is a P1 Connected, then player becomes P2. 
     // If there is no P1, then user becomes P1. 
     if (currentPlayers < 2) {
-      // if (playerOneExists) {
-      //   playerNum = 2;
-      //   console.log('p1 existss')
-      //   console.log("p num " + playerNum)
-      // } else {
-      //   playerNum = 1;
-      //   console.log("player num" + playerNum)
-      // }
-      console.log(playerOneExists)
-      console.log("usey" + username);
+      if (playerOneExists) {
+        playerNum = 2;
+        console.log('p1 exists');
+        console.log("p num " + playerNum);
+      } else {
+        playerNum = 1;
+        console.log("player num" + playerNum)
+      }
       // Creates key based on player's number. 
       playerRef = database.ref("/players/" + pNum);
       playerRef.set({
@@ -186,7 +183,7 @@ $(document).ready(function () {
         losses: 0,
         choice: null
       });
-      
+
     } else {
       alert("Sorry! This Game is Full. Please Try Again Later!");
     }
@@ -211,7 +208,9 @@ $(document).ready(function () {
     if (playerNum) {
       // For the first turn: 
       if (currentTurn === 1) {
-        console.log("its p1 turn game start")
+        if (currentTurn === playerNum) {
+          $("#sub-title").text("It's Your Turn!"); 
+        }
       }
     }
   });
