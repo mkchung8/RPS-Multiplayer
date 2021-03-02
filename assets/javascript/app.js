@@ -50,9 +50,20 @@ $(document).ready(function () {
 
   // Click events for dynamically added <li> elements
   $(document).on("click", "li", function(){
-    
+
+    // Grabs text from <li> choice selected by user. 
     var clickChoice = $(this).text(); 
+
+    // Sets choice in current player's object in firebase. 
     playerRef.child("choice").set(clickChoice); 
+
+    // Increments turn. Turn goes from:
+    // 1 - player 1
+    // 2 - player 2
+    // 3 - determine winner
+    currentTurnRef.transaction(function(turn){
+      return turn + 1;
+    });
   }); 
 
   // Tracks changes in key which contains player objects.
@@ -216,11 +227,9 @@ $(document).ready(function () {
       if (currentTurn === 1) {
         if (currentTurn === playerNum) {
           $("#sub-title").text("It's Your Turn!"); 
-          
           $(`#player${playerNum}-div`).append(`<ul id="${playerNum}-choices"><li>Rock</li><li>Paper</li><li>Scissors</li></ul>`);
         } else {
           $("#sub-title").text("Waiting for " + playerOneData.name + " to choose");
-          
         }
         $("#player1-div").css("border", "3px solid green");
         $("#player2-div").css("border", "3px solid red"); 
