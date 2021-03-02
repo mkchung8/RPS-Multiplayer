@@ -18,12 +18,12 @@ $(document).ready(function () {
   var playersRef = database.ref("players");
   var currentTurnRef = database.ref("turn");
   var currentPlayers = null;
-  var currentTurn = null; 
+  var currentTurn = null;
   var playerNum = false;
   var playerOneData = null;
   var playerTwoData = null;
-  var playerOneExists = false; 
-  var playerTwoExists = false; 
+  var playerOneExists = false;
+  var playerTwoExists = false;
 
   // START BUTTONS  
   var p1StartButton = `<button type="button" data-player-number=1 id="p1-start-button" class="startButton" >
@@ -38,15 +38,15 @@ $(document).ready(function () {
                           <h4 class="blink">Press to Start</h4>
                          </button>`;
 
-                         $("#player2-div").append(p2StartButton);
-                         $("#player1-div").append(p1StartButton);
-                      
-      // Start Button Event Listener: Goes to Load Player Input Form. 
-      $(".startButton").one("click", function () {
-        pNum = $(this).data("player-number");
-        loadPlayerForm(pNum);
-        $(this).remove();
-      });
+  $("#player2-div").append(p2StartButton);
+  $("#player1-div").append(p1StartButton);
+
+  // Start Button Event Listener: Goes to Load Player Input Form. 
+  $(".startButton").one("click", function () {
+    pNum = $(this).data("player-number");
+    loadPlayerForm(pNum);
+    $(this).remove();
+  });
 
 
   // Tracks changes in key which contains player objects.
@@ -68,8 +68,8 @@ $(document).ready(function () {
       // If there is a Player 1, fill in name and score data.
       if (playerOneExists) {
         $("#p1-title").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${playerOneData.name}</b></h3>`);
-        $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`); 
-        $("#p1-start-button").remove(); 
+        $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`);
+        $("#p1-start-button").remove();
       } else {
         // If there is no Player 1, clear score and show waiting. 
         $("#p1-title").html(`<h2 style="color:red">Waiting for P1...</h2>`);
@@ -81,16 +81,16 @@ $(document).ready(function () {
       if (playerTwoExists) {
         $("#p2-title").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p=0"><b>${playerTwoData.name}</b></h3>`);
         $("#p2-score").html(`<p2>P2: ${playerTwoData.wins}</p2>`);
-        $("#p2-start-button").remove(); 
+        $("#p2-start-button").remove();
       } else {
         // If there is no Player 2, clear score and show waiting. 
         $("#p2-title").html(`<h2 style="color:red">Waiting for P2...</h2>`);
-        
+
         $("#p2-score").empty();
         $("#tie-score").empty();
       }
 
-    
+
       // if (!playerOneExists) {
       //   console.log('p1 does not exist');
       // } else if (playerOneExists) {
@@ -119,21 +119,6 @@ $(document).ready(function () {
       console.error(error);
     });
 
-
-  // Tracks changes in Current Turn Key Ref. 
-  currentTurnRef.on("value", function (snapshot) {
-    // Gets current turn value from snapshot
-    currentTurn = snapshot.val();
-
-    // Do not execute if not player is not connected. 
-    if (playerNum) {
-      // For the first turn: 
-      if (currentTurn === 1) {
-        console.log("its p1 turn game start")
-      }
-    }
-  });
-
   // Function to make text blink. 
   function blinkIt() {
     var blinks = document.getElementsByClassName("blink");
@@ -152,19 +137,19 @@ $(document).ready(function () {
 
   // Function that loads player form to user's div. 
   function loadPlayerForm(pNum) {
-    var playerInputForm = `<form class="player-form">
-                    <p1>Enter Name: </p1><br><input id="p${pNum}-username" type="text">
-                    <input class="name-enter" type="submit" value="Submit">
-                   </form>`;
+    var playerInputForm = `<form id="p${pNum}-form">
+                             <p1>Enter Name: </p1><br><input id="p${pNum}-username" type="text">
+                             <input class="name-enter" type="submit" value="Submit">
+                           </form>`;
     $(`#player${pNum}-div`).append(playerInputForm);
     console.log(`pnummy ${pNum}`)
     $(".name-enter").on("click", function () {
       event.preventDefault();
-      console.log("clickehfjehf")
       if ($(`#p${pNum}-username`).val() !== "") {
         username = capitalize($(`#p${pNum}-username`).val());
         console.log("enter name button was pressed" + username);
         playerSet(username, pNum);
+        $(`#p${pNum}-form`).remove();
       }
     });
   };
@@ -179,7 +164,7 @@ $(document).ready(function () {
 
   // Function to get user into the game. 
   function playerSet(username, pNum) {
-    console.log("player set execc"); 
+    console.log("player set execc");
     // Checks for Current Players: If there is a P1 Connected, then player becomes P2. 
     // If there is no P1, then user becomes P1. 
     if (currentPlayers < 2) {
@@ -191,24 +176,24 @@ $(document).ready(function () {
       //   playerNum = 1;
       //   console.log("player num" + playerNum)
       // }
-    console.log(playerOneExists)
-    console.log("usey" + username);
-    // Creates key based on player's number. 
-    playerRef = database.ref("/players/" + pNum);
-    playerRef.set({
-      name: username, 
-      wins: 0, 
-      losses: 0, 
-      choice: null
-    }); 
-  
+      console.log(playerOneExists)
+      console.log("usey" + username);
+      // Creates key based on player's number. 
+      playerRef = database.ref("/players/" + pNum);
+      playerRef.set({
+        name: username,
+        wins: 0,
+        losses: 0,
+        choice: null
+      });
+      
     } else {
       alert("Sorry! This Game is Full. Please Try Again Later!");
     }
-   
-   
+
+
     // Creates Player Object
-   
+
 
     // // Turns Current Turn Ref to null on disconnect, which will discontinue the game. 
     currentTurnRef.onDisconnect().remove();
@@ -217,7 +202,19 @@ $(document).ready(function () {
     playerRef.onDisconnect().remove();
   };
 
+  // Tracks changes in Current Turn Key Ref. 
+  currentTurnRef.on("value", function (snapshot) {
+    // Gets current turn value from snapshot
+    currentTurn = snapshot.val();
 
+    // Do not execute if not player is not connected. 
+    if (playerNum) {
+      // For the first turn: 
+      if (currentTurn === 1) {
+        console.log("its p1 turn game start")
+      }
+    }
+  });
 
   // function p1Select() {
   //   $("#p1-start-button").remove();
