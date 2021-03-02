@@ -18,22 +18,26 @@ $(document).ready(function () {
   var playersRef = database.ref("players");
   var currentTurnRef = database.ref("turn");
   var currentPlayers = null;
+  var currentTurn = null; 
   var playerNum = false;
   var playerOneData = null;
   var playerTwoData = null;
+  var playerOneExists = false; 
+  var playerTwoExists = false; 
 
   // START BUTTONS  
-  var p1StartButton = `<button type="button" id="p1-start-button" class="startButton" >
+  var p1StartButton = `<button type="button" data-player-number=1 id="p1-start-button" class="startButton" >
                          <h3>Player 1</h3> 
                          <br>
                          <h4 class="blink">Press to Start</h4>
                        </button>`;
 
-  var p2StartButton = `<button type="button" id="p2-start-button" class="startButton">
+  var p2StartButton = `<button type="button" data-player-number=2 id="p2-start-button" class="startButton">
                           <h3>Player 2</h3> 
                           <br>
                           <h4 class="blink">Press to Start</h4>
                          </button>`;
+                      
 
   // Tracks changes in key which contains player objects.
   playersRef.on("value",
@@ -41,6 +45,7 @@ $(document).ready(function () {
     function (snapshot) {
       // Length of Players Array
       currentPlayers = snapshot.numChildren();
+      console.log(`current players: ${currentPlayers}`)
 
       // Checking to see if players exist. 
       let playerOneExists = snapshot.child("player1").val();
@@ -76,11 +81,12 @@ $(document).ready(function () {
 
       // Start Button Event Listener: Goes to Load Player Input Form. 
       $(".startButton").on("click", function () {
-        event.preventDefault();
+        pNum = $(this).data("player-number");
+        loadPlayerForm(pNum);
         $(this).remove();
-        loadPlayerForm();
       });
 
+    
       // if (!playerOneExists) {
       //   console.log('p1 does not exist');
       // } else if (playerOneExists) {
@@ -109,6 +115,21 @@ $(document).ready(function () {
       console.error(error);
     });
 
+
+  // Tracks changes in Current Turn Key Ref. 
+  currentTurnRef.on("value", function (snapshot) {
+    // Gets current turn value from snapshot
+    currentTurn = snapshot.val();
+
+    // Do not execute if not player is not connected. 
+    if (playerNum) {
+      // For the first turn: 
+      if (currentTurn === 1) {
+        console.log("its p1 turn game start")
+      }
+    }
+  });
+
   // Function to make text blink. 
   function blinkIt() {
     var blinks = document.getElementsByClassName("blink");
@@ -126,59 +147,71 @@ $(document).ready(function () {
   };
 
   // Function that loads player form to user's div. 
-  function loadPlayerForm() {
+  function loadPlayerForm(pNum) {
     var playerInputForm = `<form class="player-form">
                     <p1>Enter Name: </p1><br><input id="username" type="text">
                     <input id="name-enter" type="submit" value="Submit">
                    </form>`;
-    $("#player1-div").append(playerInputForm);
+    $(`#player${pNum}-div`).append(playerInputForm);
+   $(this).parents('.player-form').remove()
     $("#name-enter").on("click", function () {
       event.preventDefault();
       if ($("#username").val() !== "") {
         username = capitalize($("#username").val());
-        console.log("enter name button was pressed");
-        playerSet(username);
+        console.log("enter name button was pressed" + username);
+        playerSet(username, pNum);
+    
       }
     });
   };
-  
+
   // When a player joins, checks to see if there is two players. If yes, game will start. 
-  playerRef.on("child_added", function(snapshot){
+  playerRef.on("child_added", function (snapshot) {
     if (currentPlayers === 1) {
       // Sets Turn Ref Counter to 1, which will trigger the game to start. 
-      currentTurnRef.set(1); 
+      currentTurnRef.set(1);
     }
-  }); 
+  });
   // Function to get user into the game. 
-  function playerSet(username) {
-
+  function playerSet(username, pNum) {
+    console.log("player set execc"); 
     // Checks for Current Players: If there is a P1 Connected, then player becomes P2. 
     // If there is no P1, then user becomes P1. 
     if (currentPlayers < 2) {
       if (playerOneExists) {
         playerNum = 2;
+        console.log('p1 existss')
+        console.log("p num " + playerNum)
       } else {
         playerNum = 1;
+        console.log("player num" + playerNum)
       }
+    console.log("usey" + username);
+    // Creates key based on player's number. 
+    playerRef = database.ref("/players/" + playerNum);
+    playerRef.set({
+      name: username, 
+      wins: 0, 
+      losses: 0, 
+      choice: null
+    }); 
+    $(`#p${playerNum}-div`).empty(); 
     } else {
       alert("Sorry! This Game is Full. Please Try Again Later!");
     }
-
-    // Creates key based on player's number. 
-    playerRef = database.ref(`/players/${playerNum}`);
-
+   
+   
     // Creates Player Object
-    playerRef.set({
-      name: username,
-      wins: 0,
-      losses: 0,
-      choice: null
-    });
-    
-    //
-    playerRef.onDisconnect().remove();
+   
 
+    // // Turns Current Turn Ref to null on disconnect, which will discontinue the game. 
+    // currentTurnRef.onDisconnect().remove();
+
+    // // Removes Player's Object on Disconnect. 
+    // playerRef.onDisconnect().remove();
   };
+
+
 
   // function p1Select() {
   //   $("#p1-start-button").remove();
@@ -247,11 +280,6 @@ $(document).ready(function () {
     });
     $("#player2-div").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p-0"><b>${p2Name}</b></h3>`);
   };
-
-  currentTurnRef.on("value", function (snapshot) {
-    currentTurn = snapshot.val();
-    console.log("current turn: " + currentTurn);
-  });
 
   function gamePlay() {
     console.log("gameplay exec 1");
