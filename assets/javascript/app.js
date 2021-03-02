@@ -37,7 +37,17 @@ $(document).ready(function () {
                           <br>
                           <h4 class="blink">Press to Start</h4>
                          </button>`;
+
+                         $("#player2-div").append(p2StartButton);
+                         $("#player1-div").append(p1StartButton);
                       
+      // Start Button Event Listener: Goes to Load Player Input Form. 
+      $(".startButton").one("click", function () {
+        pNum = $(this).data("player-number");
+        loadPlayerForm(pNum);
+        $(this).remove();
+      });
+
 
   // Tracks changes in key which contains player objects.
   playersRef.on("value",
@@ -48,8 +58,8 @@ $(document).ready(function () {
       console.log(`current players: ${currentPlayers}`)
 
       // Checking to see if players exist. 
-      let playerOneExists = snapshot.child("player1").val();
-      let playerTwoExists = snapshot.child("player2").val();
+      let playerOneExists = snapshot.child("1").val();
+      let playerTwoExists = snapshot.child("2").val();
 
       // Player Data Objects
       playerOneData = snapshot.child("1").val();
@@ -58,11 +68,11 @@ $(document).ready(function () {
       // If there is a Player 1, fill in name and score data.
       if (playerOneExists) {
         $("#p1-title").html(`<p class="mt-1">PLAYER 1</p></br><h3 class="p-0"><b>${playerOneData.name}</b></h3>`);
-        $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`);
+        $("#p1-score").html(`<p2>P1: ${playerOneData.wins}</p2>`); 
+        $("#p1-start-button").remove(); 
       } else {
         // If there is no Player 1, clear score and show waiting. 
         $("#p1-title").html(`<h2 style="color:red">Waiting for P1...</h2>`);
-        $("#player1-div").append(p1StartButton);
         $("#p1-score").empty();
         $("#tie-score").empty();
       }
@@ -71,20 +81,14 @@ $(document).ready(function () {
       if (playerTwoExists) {
         $("#p2-title").html(`<p class="mt-1">PLAYER 2</p></br><h3 class="p=0"><b>${playerTwoData.name}</b></h3>`);
         $("#p2-score").html(`<p2>P2: ${playerTwoData.wins}</p2>`);
+        $("#p2-start-button").remove(); 
       } else {
         // If there is no Player 2, clear score and show waiting. 
         $("#p2-title").html(`<h2 style="color:red">Waiting for P2...</h2>`);
-        $("#player2-div").append(p2StartButton);
+        
         $("#p2-score").empty();
         $("#tie-score").empty();
       }
-
-      // Start Button Event Listener: Goes to Load Player Input Form. 
-      $(".startButton").on("click", function () {
-        pNum = $(this).data("player-number");
-        loadPlayerForm(pNum);
-        $(this).remove();
-      });
 
     
       // if (!playerOneExists) {
@@ -149,53 +153,55 @@ $(document).ready(function () {
   // Function that loads player form to user's div. 
   function loadPlayerForm(pNum) {
     var playerInputForm = `<form class="player-form">
-                    <p1>Enter Name: </p1><br><input id="username" type="text">
-                    <input id="name-enter" type="submit" value="Submit">
+                    <p1>Enter Name: </p1><br><input id="p${pNum}-username" type="text">
+                    <input class="name-enter" type="submit" value="Submit">
                    </form>`;
     $(`#player${pNum}-div`).append(playerInputForm);
-   $(this).parents('.player-form').remove()
-    $("#name-enter").on("click", function () {
+    console.log(`pnummy ${pNum}`)
+    $(".name-enter").on("click", function () {
       event.preventDefault();
-      if ($("#username").val() !== "") {
-        username = capitalize($("#username").val());
+      console.log("clickehfjehf")
+      if ($(`#p${pNum}-username`).val() !== "") {
+        username = capitalize($(`#p${pNum}-username`).val());
         console.log("enter name button was pressed" + username);
         playerSet(username, pNum);
-    
       }
     });
   };
 
   // When a player joins, checks to see if there is two players. If yes, game will start. 
-  playerRef.on("child_added", function (snapshot) {
+  playersRef.on("child_added", function (snapshot) {
     if (currentPlayers === 1) {
       // Sets Turn Ref Counter to 1, which will trigger the game to start. 
       currentTurnRef.set(1);
     }
   });
+
   // Function to get user into the game. 
   function playerSet(username, pNum) {
     console.log("player set execc"); 
     // Checks for Current Players: If there is a P1 Connected, then player becomes P2. 
     // If there is no P1, then user becomes P1. 
     if (currentPlayers < 2) {
-      if (playerOneExists) {
-        playerNum = 2;
-        console.log('p1 existss')
-        console.log("p num " + playerNum)
-      } else {
-        playerNum = 1;
-        console.log("player num" + playerNum)
-      }
+      // if (playerOneExists) {
+      //   playerNum = 2;
+      //   console.log('p1 existss')
+      //   console.log("p num " + playerNum)
+      // } else {
+      //   playerNum = 1;
+      //   console.log("player num" + playerNum)
+      // }
+    console.log(playerOneExists)
     console.log("usey" + username);
     // Creates key based on player's number. 
-    playerRef = database.ref("/players/" + playerNum);
+    playerRef = database.ref("/players/" + pNum);
     playerRef.set({
       name: username, 
       wins: 0, 
       losses: 0, 
       choice: null
     }); 
-    $(`#p${playerNum}-div`).empty(); 
+  
     } else {
       alert("Sorry! This Game is Full. Please Try Again Later!");
     }
@@ -205,10 +211,10 @@ $(document).ready(function () {
    
 
     // // Turns Current Turn Ref to null on disconnect, which will discontinue the game. 
-    // currentTurnRef.onDisconnect().remove();
+    currentTurnRef.onDisconnect().remove();
 
     // // Removes Player's Object on Disconnect. 
-    // playerRef.onDisconnect().remove();
+    playerRef.onDisconnect().remove();
   };
 
 
